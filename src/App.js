@@ -4,29 +4,40 @@ import Header from './components/Header';
 import QueuedSongList from './components/QueuedSongList';
 import SongList from './components/SongList';
 import SongPlayer from './components/SongPlayer';
-import { Grid } from '@material-ui/core';
+import { Grid, useMediaQuery } from '@material-ui/core';
  
 
 function App() {
+  const greaterThanSm = useMediaQuery(theme => theme.breakpoints.up('sm'));
+  const greaterThanMd = useMediaQuery(theme => theme.breakpoints.up('md'));
+
   return (
     <>
-      <Header />
+      {greaterThanSm && <Header />}
       <Grid container spacing={3}>
         <Grid style={{
-          paddingTop: 80
+          paddingTop: greaterThanSm ?  80 : 10
         }}
           item xs={12} md={7}>
           <AddSong />
           <SongList />
         </Grid>
-        <Grid style={{
-          postion: 'fixed',
-          width: '100%',
-          right: 0,
-          top: 70
-        }} item xs={12} md={5}>
+        <Grid 
+          style={
+            greaterThanMd 
+            ? {
+            postion: 'fixed',
+            width: '100%',
+            right: 0,
+            top: 70
+          } : {
+            position: 'fixed',
+            width: '100%',
+            left: 0,
+            bottom: 0
+          }} item xs={12} md={5}>
           <SongPlayer />
-          <QueuedSongList />
+
         </Grid>
       </Grid>
     </>
