@@ -29,7 +29,7 @@ function QueuedSongList() {
   const greaterThanMd = useMediaQuery(theme => theme.breakpoints.up('md'));
 
   const song = {
-    title: "10th Avenue Freezeout",
+    title: "Tenth Avenue Freeze Out",
     artist: "Springsteen",
     thumbnail: "https://cdn.mos.cms.futurecdn.net/EjnCZRe2ZLzr8v46LZXdGH-970-80.jpg.webp"
   }

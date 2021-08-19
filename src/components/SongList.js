@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/react-hooks';
 import { 
   CardContent, 
   CardMedia, 
@@ -9,15 +10,16 @@ import {
   makeStyles } from '@material-ui/core';
 import { PlayArrow, Save } from '@material-ui/icons';
 import React from 'react';
+import { GET_SONGS } from '../graphql/queries';
 
 function SongList() {
-  let loading = false;
+  const { data, loading, error } = useQuery(GET_SONGS);
 
-  const song = {
-    title: "10th Avenue Freezeout",
-    artist: "Springsteen",
-    thumbnail: "https://cdn.mos.cms.futurecdn.net/EjnCZRe2ZLzr8v46LZXdGH-970-80.jpg.webp"
-  }
+  // const song = {
+  //   title: "Tenth Avenue Freeze Out",
+  //   artist: "Springsteen",
+  //   thumbnail: "https://cdn.mos.cms.futurecdn.net/EjnCZRe2ZLzr8v46LZXdGH-970-80.jpg.webp"
+  // }
 
   if (loading) {
     return (
@@ -31,11 +33,11 @@ function SongList() {
       </div>
     )
   }
-  
+  if (error) return <div>Error fetching songs</div>
   return (
     <div>
-      {Array.from({ length: 10 }, () => song).map((song, i) => (
-        <Song key={i} song={song}/>
+      {data.songs.map((song) => (
+        <Song key={song.id} song={song}/>
       ))}
     </div>
     );

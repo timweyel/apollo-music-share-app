@@ -9,6 +9,9 @@ import { TextField,
   makeStyles
 } from "@material-ui/core";
 import { Link, AddBoxOutlined } from '@material-ui/icons';
+import ReactPlayer from 'react-player';
+import SoundcloudPlayer from 'react-player/lib/players/SoundCloud';
+import YouTubePlayer from 'react-player/lib/players/YouTube';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -31,11 +34,72 @@ const useStyles = makeStyles(theme => ({
 
 function AddSong() {
   const classes = useStyles();
+  const [url, setUrl] = React.useState('');
+  const [playable, setPlayable] = React.useState(false);
   const [dialog, setDialog] = React.useState(false);
+  const [song, setSong] = React.useState({
+    duration: 0,
+    title: "",
+    artist: "",
+    thumbnail: ""
+  })
+
+  React.useEffect(() => {
+    const isPlayable = SoundcloudPlayer.canPlay(url) || YouTubePlayer.canPlay(url)
+    setPlayable(isPlayable)
+  }, [url]);
+
+  function handleChangeSong(event) {
+    const { name, value } =  event.target;
+    setSong(prevSong => ({
+      ...prevSong,
+      [name]: value
+    }));
+  }
   
 function handleCloseDialog() {
   setDialog(false);
 }
+
+async function handleEditSong({ player }) {
+  const nestedPlayer = player.player.player;
+  let songData;
+  if (nestedPlayer.getVideoData) {
+    songData = getYoutubeInfo(nestedPlayer)
+  } else if (nestedPlayer.getCurrentSound) {
+    songData = await getSoundcloudInfo(nestedPlayer);
+  }
+  setSong({ ...songData, url })
+}
+
+function getYoutubeInfo(player) {
+  const duration = player.getDuration()
+  const { title, video_id, author } = player.getVideoData();
+  const thumbnail = 'http://img.youtube.com/vi/${video_id}/0.jpg';
+  return {
+    duration,
+    title,
+    artist: author,
+    thumbnail
+  }
+}
+
+function getSoundcloudInfo(player) {
+  return new Promise(resolve => {
+    player.getCurrentSound(songData => {
+      if (songData) {
+        return {
+          duration: Number(songData.duration / 1000),
+          title: songData.title,
+          artist: songData.user.username,
+          thumbnail: songData.artwork_ur.replace('-large', '-t500x500')
+        }
+      }
+    })
+  });
+}
+
+  const { thumbnail, title, artist } = song;
 
   return (
     <div className={classes.container}>
@@ -46,23 +110,30 @@ function handleCloseDialog() {
     >
       <DialogTitle>Edit Song</DialogTitle>
       <DialogContent>
-        <img src="http://img.youtube.com/vi/--ZtUFsIgMk/0.jpg"
+        <img 
+        src={thumbnail}
         alt="Song thumbnail"
         className={classes.thumbnail}
         />
         <TextField
+          value={title}
+          onChange={handleChangeSong}
           margin="dense"
           name="title"
           label="Title"
           fullWidth
         />
-                <TextField
+        <TextField
+          value={artist}
+          onChange={handleChangeSong}
           margin="dense"
           name="artist"
           label="Artist"
           fullWidth
         />
-                <TextField
+        <TextField
+          value={thumbnail}
+          onChange={handleChangeSong}
           margin="dense"
           name="thumbnail"
           label="Thumbnail"
@@ -76,6 +147,8 @@ function handleCloseDialog() {
     </Dialog>
       <TextField
         className={classes.urlInput}
+        onChange={event => setUrl(event.target.value)}
+        value={url}
         placeholder = "Add Youtube or Soundcloud Url"
         fullWidth
         margin = "normal"
@@ -89,6 +162,7 @@ function handleCloseDialog() {
         }}
       />
       <Button
+        disabled={!playable}
         className={classes.addSongButton}
         onClick={() => setDialog(true)}
         variant="contained"
@@ -96,7 +170,8 @@ function handleCloseDialog() {
         endIcon={<AddBoxOutlined />}
       >
         Add
-      </Button>
+      </Button>;
+      <ReactPlayer url={url} hidden onReady={handleEditSong} />
     </div>
   )
 }
