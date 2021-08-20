@@ -1,6 +1,8 @@
+import { useMutation } from '@apollo/client';
 import { Avatar, IconButton, Typography, makeStyles, useMediaQuery } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 import React from 'react';
+import { ADD_OR_REMOVE_FROM_QUEUE } from '../graphql/mutations';
 
 const useStyles = makeStyles({
   avatar: {
@@ -25,21 +27,23 @@ const useStyles = makeStyles({
   }
 });
 
-function QueuedSongList() {
+function QueuedSongList({ queue }) {
+  console.log({ queue });
   const greaterThanMd = useMediaQuery(theme => theme.breakpoints.up('md'));
 
-  const song = {
-    title: "Tenth Avenue Freeze Out",
-    artist: "Springsteen",
-    thumbnail: "https://cdn.mos.cms.futurecdn.net/EjnCZRe2ZLzr8v46LZXdGH-970-80.jpg.webp"
-  }
+  // const song = {
+  //   title: "Tenth Avenue Freeze Out",
+  //   artist: "Springsteen",
+  //   thumbnail: "https://cdn.mos.cms.futurecdn.net/EjnCZRe2ZLzr8v46LZXdGH-970-80.jpg.webp"
+  // }
 
-  return ( greaterThanMd && ( 
+  return ( 
+    greaterThanMd && ( 
     <div style={{ margin: '10px 0' }}>
       <Typography color="textSecondary" variant="button">
-        QUEUE (5)
+        QUEUE ({queue.length})
       </Typography>
-      {Array.from({ length: 5 }, () => song).map((song, i) => (
+      {queue.map((song, i) => (
         <QueuedSong key={i} song={song} />
       ))}
     </div>
@@ -50,6 +54,17 @@ function QueuedSongList() {
 function QueuedSong({ song }) {
   const classes = useStyles();  
   const { thumbnail, artist, title } = song;
+  const [addOrRemoveFromQueue] = useMutation(ADD_OR_REMOVE_FROM_QUEUE, {
+    onCompleted: data => {
+      localStorage.setItem('queue', JSON.stringify(data.addOrRemoveFromQueue))
+    }
+  });
+
+  function handleAddOrRemoveFromQueue() {
+    addOrRemoveFromQueue({
+      variables: { input: { ...song, __typename: 'Song' }}
+    })
+  }
 
   return (
     <div className={classes.container}>
@@ -62,7 +77,7 @@ function QueuedSong({ song }) {
           {artist}
         </Typography>
       </div>
-      <IconButton>
+      <IconButton onClick={handleAddOrRemoveFromQueue}>
         <Delete color="error" />
       </IconButton>
     </div>

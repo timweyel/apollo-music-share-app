@@ -11,6 +11,8 @@ import {
 } from "@material-ui/core";
 import { SkipPrevious, PlayArrow, SkipNext, Pause } from "@material-ui/icons";
 import { SongContext } from '../App';
+import { useQuery } from "@apollo/client";
+import { GET_QUEUED_SONGS } from "../graphql/queries";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -42,11 +44,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function SongPlayer() {
-  const { state } = React.useContext(SongContext);
+  const { data } = useQuery(GET_QUEUED_SONGS)
+  const { state, dispatch } = React.useContext(SongContext);
   const classes = useStyles();
 
   function handleTogglePlay() {
-    dispatchEvent(state.isPlaying ? { type: "PAUSE_SONG" } : { type: "PLAY_SONG "});
+    dispatch(state.isPlaying ? { type: "PAUSE_SONG" } : { type: "PLAY_SONG "});
   }
 
   return (
@@ -86,7 +89,7 @@ function SongPlayer() {
           image={state.song.thumbnail}
         />
       </Card>
-      <QueuedSongList />
+      <QueuedSongList queue={data.queue}/>
     </>
   );
 }
