@@ -1,7 +1,7 @@
 import React from 'react'; 
 import AddSong from './components/AddSong';
 import Header from './components/Header';
-import QueuedSongList from './components/QueuedSongList';
+// import QueuedSongList from './components/QueuedSongList';
 import SongList from './components/SongList';
 import SongPlayer from './components/SongPlayer';
 import { Grid, useMediaQuery } from '@material-ui/core';
