@@ -211,7 +211,7 @@ return (
       endIcon={<AddBoxOutlined />}
     >
       Add
-    </Button>;
+    </Button>
     <ReactPlayer url={url} hidden onReady={handleEditSong} />
   </div>
 )

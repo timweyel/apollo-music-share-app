@@ -17,12 +17,6 @@ import { ADD_OR_REMOVE_FROM_QUEUE } from '../graphql/mutations';
 function SongList() {
   const { data, loading, error } = useSubscription(GET_SONGS);
 
-  // const song = {
-  //   title: "Tenth Avenue Freeze Out",
-  //   artist: "Springsteen",
-  //   thumbnail: "https://cdn.mos.cms.futurecdn.net/EjnCZRe2ZLzr8v46LZXdGH-970-80.jpg.webp"
-  // }
-
   if (loading) {
     return (
       <div style={{

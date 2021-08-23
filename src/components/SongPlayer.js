@@ -10,8 +10,8 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { SkipPrevious, PlayArrow, SkipNext, Pause } from "@material-ui/icons";
-import { SongContext } from '../App';
-import { useQuery } from "@apollo/client";
+import { SongContext } from "../App";
+import { useQuery } from "@apollo/react-hooks";
 import { GET_QUEUED_SONGS } from "../graphql/queries";
 import ReactPlayer from "react-player";
 
@@ -48,27 +48,27 @@ function SongPlayer() {
   const { data } = useQuery(GET_QUEUED_SONGS);
   const reactPlayerRef = React.useRef();
   const { state, dispatch } = React.useContext(SongContext);
-  const [played, setPlayed]= React.useState(0);
+  const [played, setPlayed] = React.useState(0);
   const [playedSeconds, setPlayedSeconds] = React.useState(0);
   const [seeking, setSeeking] = React.useState(false);
   const [positionInQueue, setPositionInQueue] = React.useState(0);
   const classes = useStyles();
 
   React.useEffect(() => {
-    const songIndex = data.queue.findIndex(song => song.id === state.song.id)
+    const songIndex = data.queue.findIndex(song => song.id === state.song.id);
     setPositionInQueue(songIndex);
   }, [data.queue, state.song.id]);
 
   React.useEffect(() => {
     const nextSong = data.queue[positionInQueue + 1];
-    if (played === 1 && nextSong) {
+    if (played >= 0.99 && nextSong) {
       setPlayed(0);
-      dispatch({ type: "SET_SONG", payload: { song: nextSong }})
+      dispatch({ type: "SET_SONG", payload: { song: nextSong } });
     }
-  }, [data.queue, played, dispatch, positionInQueue])
+  }, [data.queue, played, dispatch, positionInQueue]);
 
   function handleTogglePlay() {
-    dispatch(state.isPlaying ? { type: "PAUSE_SONG" } : { type: "PLAY_SONG "});
+    dispatch(state.isPlaying ? { type: "PAUSE_SONG" } : { type: "PLAY_SONG" });
   }
 
   function handleProgressChange(event, newValue) {
@@ -78,7 +78,7 @@ function SongPlayer() {
   function handleSeekMouseDown() {
     setSeeking(true);
   }
-  
+
   function handleSeekMouseUp() {
     setSeeking(false);
     reactPlayerRef.current.seekTo(played);
@@ -90,15 +90,15 @@ function SongPlayer() {
 
   function handlePlayNextSong() {
     const nextSong = data.queue[positionInQueue + 1];
-    if(nextSong) {
-      dispatch({ type: "SET_SONG", payload: { song: nextSong }})
+    if (nextSong) {
+      dispatch({ type: "SET_SONG", payload: { song: nextSong } });
     }
   }
 
-  function handlePlayPrev() {
+  function handlePlayPrevSong() {
     const prevSong = data.queue[positionInQueue - 1];
-    if(prevSong) {
-      dispatch({ type: "SET_SONG", payload: { song: prevSong }})
+    if (prevSong) {
+      dispatch({ type: "SET_SONG", payload: { song: prevSong } });
     }
   }
 
@@ -115,15 +115,15 @@ function SongPlayer() {
             </Typography>
           </CardContent>
           <div className={classes.controls}>
-            <IconButton onClick={handlePlayPrev}>
+            <IconButton onClick={handlePlayPrevSong}>
               <SkipPrevious />
             </IconButton>
             <IconButton onClick={handleTogglePlay}>
               {state.isPlaying ? (
                 <Pause className={classes.playIcon} />
-               ) : (
-               <PlayArrow className={classes.playIcon} />
-               )}
+              ) : (
+                <PlayArrow className={classes.playIcon} />
+              )}
             </IconButton>
             <IconButton onClick={handlePlayNextSong}>
               <SkipNext />
@@ -132,27 +132,32 @@ function SongPlayer() {
               {formatDuration(playedSeconds)}
             </Typography>
           </div>
-          <Slider 
-          onMouseDown={handleSeekMouseDown}
-          onMouseUp={handleSeekMouseUp}
-          onChange={handleProgressChange}
-          value={played} type="range" min={0} max={1} step={0.01} />
+          <Slider
+            onMouseDown={handleSeekMouseDown}
+            onMouseUp={handleSeekMouseUp}
+            onChange={handleProgressChange}
+            value={played}
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+          />
         </div>
-        <ReactPlayer 
+        <ReactPlayer
           ref={reactPlayerRef}
-          onProgress={( { played, playedSeconds }) => {
+          onProgress={({ played, playedSeconds }) => {
             if (!seeking) {
-            setPlayed(played);
-            setPlayedSeconds(playedSeconds);
+              setPlayed(played);
+              setPlayedSeconds(playedSeconds);
             }
           }}
-          url={state.song.url} playing={state.isPlaying} hidden />
-        <CardMedia
-          className={classes.thumbnail}
-          image={state.song.thumbnail}
+          url={state.song.url}
+          playing={state.isPlaying}
+          hidden
         />
+        <CardMedia className={classes.thumbnail} image={state.song.thumbnail} />
       </Card>
-      <QueuedSongList queue={data.queue}/>
+      <QueuedSongList queue={data.queue} />
     </>
   );
 }
