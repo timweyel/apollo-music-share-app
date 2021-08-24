@@ -1,6 +1,6 @@
-import { AppBar, Toolbar, Typography, makeStyles } from '@material-ui/core';
-import { HeadsetTwoTone } from '@material-ui/icons';
-import React from 'react';
+import React from "react";
+import { AppBar, Toolbar, Typography, makeStyles } from "@material-ui/core";
+import { HeadsetTwoTone } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   title: {

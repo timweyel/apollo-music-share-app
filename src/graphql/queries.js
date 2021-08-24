@@ -1,7 +1,7 @@
-import { gql } from 'apollo-boost';
+import { gql } from "apollo-boost";
 
-export const GET_QUEUED_SONGS = gql `
-  query getQueuedSongs{
+export const GET_QUEUED_SONGS = gql`
+  query getQueuedSongs {
     queue @client {
       id
       duration
