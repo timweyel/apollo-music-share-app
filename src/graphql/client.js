@@ -7,7 +7,7 @@ import { GET_QUEUED_SONGS } from "./queries";
 
 const client = new ApolloClient({
   link: new WebSocketLink({
-    uri: "wss://my-apollo-music-app.herokuapp.com/v1/graphql",
+    uri: "wss://good-music-app.herokuapp.com/v1/graphql",
     options: {
       reconnect: true
     }

@@ -12,3 +12,17 @@ export const GET_SONGS = gql`
     }
   }
 `;
+
+// export const GET_SONGS = gql`
+// query getSongs {
+//   songs(order_by: {create_at: desc}) {
+//     artist
+//     duration
+//     id
+//     thumbnail
+//     title
+//     url
+//   }
+// }
+// `
+// ;
