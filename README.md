@@ -1,7 +1,7 @@
 
 ![badge](https://img.shields.io/badge/license-MIT-brightgreen)
 
-# Apollo-Music-Share-App
+# Apollo-Music-Share-App - [Demo](https://apollo-music-share-app-jhhpswiey-timweyel.vercel.app/)
 
 ## This is a music player app build on React and GraphQL that was created through [Reed Barger's React Bootcamp](https://courses.reedbarger.com/). Users can add links to YouTube or SoundCloud songs and they will be added to your library with cover art. Additionally, users can add or remove songs from their queue.
 
